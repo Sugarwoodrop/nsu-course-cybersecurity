@@ -67,11 +67,18 @@ public class FileController {
         return ResponseEntity.ok("Файл сохранён: " + destination);
     }
 
-    @GetMapping("/redirect")
-    public ResponseEntity<Void> redirect(@RequestParam String url) {
+    @GetMapping("/sredirect")
+    public ResponseEntity<Void> safeRedirect(@RequestParam String url) {
         if (!url.startsWith("/") || url.startsWith("//")) {
             return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
+    }
+    @GetMapping("/redirect")
+    public ResponseEntity<Void> redirect(@RequestParam String url) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(url))
