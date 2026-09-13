@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,6 +65,17 @@ public class FileController {
         file.transferTo(destination);
 
         return ResponseEntity.ok("Файл сохранён: " + destination);
+    }
+
+    @GetMapping("/redirect")
+    public ResponseEntity<Void> redirect(@RequestParam String url) {
+        if (!url.startsWith("/") || url.startsWith("//")) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
     }
 
     @GetMapping("/files")
