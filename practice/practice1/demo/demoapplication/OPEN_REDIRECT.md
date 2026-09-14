@@ -43,3 +43,24 @@ Location: https://example.com
 
 Таким образом, пользователь больше не может использовать эндпоинт для перенаправления на произвольный внешний ресурс.
 ![img_1.png](img_1.png)
+
+## Код
+```java
+@GetMapping("/sredirect")
+    public ResponseEntity<Void> safeRedirect(@RequestParam String url) {
+        if (!url.startsWith("/") || url.startsWith("//")) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
+    }
+    @GetMapping("/redirect")
+    public ResponseEntity<Void> redirect(@RequestParam String url) {
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
+    }
+```
