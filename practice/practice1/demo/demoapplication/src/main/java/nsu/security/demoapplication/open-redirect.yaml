@@ -1,0 +1,36 @@
+rules:
+  - id: custom.spring-responseentity-open-redirect
+    languages:
+      - java
+    severity: WARNING
+    message: >
+      CWE-601: Untrusted URL reaches
+      ResponseEntity.location().
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site"
+      category: security
+
+    patterns:
+      - pattern: |
+          @GetMapping(...)
+          public ResponseEntity<Void> $METHOD(@RequestParam String $URL) {
+            ...
+            return ResponseEntity
+              .status(...)
+              .location(URI.create($URL))
+              .build();
+          }
+      - pattern-not: |
+          @GetMapping(...)
+          public ResponseEntity<Void> $METHOD(@RequestParam String $URL) {
+            ...
+            if (!$URL.startsWith("/") || $URL.startsWith("//")) {
+              return ResponseEntity.badRequest().build();
+            }
+            ...
+            return ResponseEntity
+              .status(...)
+              .location(URI.create($URL))
+              .build();
+          }
